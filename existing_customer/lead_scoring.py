@@ -851,8 +851,8 @@ st.session_state.setdefault("log_html", {})
 
 # Business context default
 default_context = (
-    "We aim to strengthen our mid-market presence across the U.S. for Dedicated Fiber, Internet, "
-    "Communication, and Security offerings. While coverage is strong, identifying accounts with the highest "
+    "We aim to strengthen our mid-market presence across Austrailia for Dedicated Fiber, Internet, "
+    "Communication, IoT and Security offerings. While coverage is strong, identifying accounts with the highest "
     "growth potential or urgent connectivity needs remains a challenge.\n\n"
     "As a result, sales teams lack actionable insights to prioritize and position the right products.\n\n"
     "Our goal is to enhance targeting, segmentation, and sales intelligence to deepen market penetration, "
@@ -1110,8 +1110,8 @@ if "task_running" not in st.session_state:
 
 # Business context default
 default_context = (
-    "We aim to strengthen our mid-market presence across the U.S. for Dedicated Fiber, Internet, "
-    "Communication, and Security offerings. While coverage is strong, identifying accounts with the highest "
+    "We aim to strengthen our mid-market presence across Austrailia for Dedicated Fiber, Internet, "
+    "Communication, IoT and Security offerings. While coverage is strong, identifying accounts with the highest "
     "growth potential or urgent connectivity needs remains a challenge.\n\n"
     "As a result, sales teams lack actionable insights to prioritize and position the right products.\n\n"
     "Our goal is to enhance targeting, segmentation, and sales intelligence to deepen market penetration, "
