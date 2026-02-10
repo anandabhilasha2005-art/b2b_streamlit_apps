@@ -6,10 +6,11 @@ import streamlit.components.v1 as components
 from data_ingestion import DataEngineerApp
 import datetime
 
-# ─── RESOLVE EXCEL PATHS ───
-_HERE = os.path.dirname(os.path.abspath(__file__))
-ACCOUNT_SUMMARY_PATH = os.path.join(_HERE, "account_summary.xlsx")
-RECOMMENDATIONS_PATH = os.path.join(_HERE, "recommendations.xlsx")
+BASE_DIR = Path(__file__).resolve().parent
+FILES_DIR = BASE_DIR / "files"
+ACCOUNT_SUMMARY_PATH   = FILES_DIR / "account_summary.xlsx"
+RECOMMENDATIONS_PATH   = FILES_DIR / "recommendations.xlsx"
+
 
 # --------------------------------------------------
 # Page config

@@ -10,13 +10,13 @@ import os
 
 selected_company = "IronBuild Infrastructure"
 
+BASE_DIR = Path(__file__).resolve().parent
+FILES_DIR = BASE_DIR / "files"
+
 class DataEngineerApp:
     def __init__(self):
         self.simulate_time_per_step = 0.7
-        self.BASE_DIR = os.getcwd()
-        self.excel_path = os.path.join(
-            self.BASE_DIR, "files\\b2b_agentic_streamlit_demo_data.xlsx"
-        )
+        self.excel_path = FILES_DIR / "b2b_agentic_streamlit_demo_data.xlsx"
 
     # =========================
     # UI helpers
