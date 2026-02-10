@@ -5,6 +5,8 @@ import streamlit as st
 import streamlit.components.v1 as components
 from data_ingestion import DataEngineerApp
 import datetime
+from pathlib import Path
+
 
 BASE_DIR = Path(__file__).resolve().parent
 FILES_DIR = BASE_DIR / "files"
