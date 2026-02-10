@@ -1,18 +1,15 @@
 import pandas as pd
 import re, html, os, time
+from typing import List, Dict
 import streamlit as st
 import streamlit.components.v1 as components
-import datetime
-from pathlib import Path
-from typing import List, Dict
 from data_ingestion import DataEngineerApp
+import datetime
 
-
-BASE_DIR = Path(__file__).resolve().parent
-FILES_DIR = BASE_DIR / "files"
-ACCOUNT_SUMMARY_PATH   = FILES_DIR / "account_summary.xlsx"
-RECOMMENDATIONS_PATH   = FILES_DIR / "recommendations.xlsx"
-
+# ─── RESOLVE EXCEL PATHS ───
+_HERE = os.path.dirname(os.path.abspath(__file__))
+ACCOUNT_SUMMARY_PATH = os.path.join(_HERE, "account_summary.xlsx")
+RECOMMENDATIONS_PATH = os.path.join(_HERE, "recommendations.xlsx")
 
 # --------------------------------------------------
 # Page config
@@ -51,7 +48,13 @@ st.markdown(
     margin-bottom: 16px;
 }
 .agent-log-line { margin-bottom: 4px; }
-.agent-log-line.title { font-weight: 700; color: #6b00b8; }
+
+.agent-log-line.title {
+    font-weight: 700;
+    color: #6b00b8;
+    margin-bottom: 6px;
+}
+
 .step-label { color: #6b00b8; font-weight: 700; }
 .agent-log-line.info { color: #4a3b8f; }
 .agent-log-line.success { color: #1b7f3b; }
@@ -2662,11 +2665,17 @@ with tab2:
         # Header
         header_ph = st.empty()
         step_prefix = f"<span class='step-label'>STEP {step_num} — </span>"
+
+
         header_ph.markdown(
-            f"<div class='task-card-header'><div class='task-name'>{step_prefix}{html.escape(t['name'])} "
-            f"{status_dot(status_color,12)}<span style='color:{status_color};'>— {status_text}</span></div></div>",
-            unsafe_allow_html=True,
-        )
+        f"<div class='task-card-header'><div class='task-name'>"
+        f"{html.escape(t['name'])} "
+        f"{status_dot(status_color,12)}"
+        f"<span style='color:{status_color};'>— {status_text}</span>"
+        f"</div></div>",
+        unsafe_allow_html=True,
+    )
+
         
         # Progress bar placeholder
         progress_ph = st.empty()
@@ -2837,28 +2846,39 @@ if run_clicked:
                 unsafe_allow_html=True,
             )
 
-        
+
         # Animate logs
         agent_steps = STEP_LOGS.get(key, [])
-        log_html = ""
+
+        # STEP header line
+        ts0 = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        log_html = (
+            f"<div class='agent-log-line title'>"
+            f"{ts0} — STEP {step_num} — {html.escape(task['name'])}"
+            f"</div>"
+        )
+
         total_lines = len(agent_steps)
-        
+
         for s_idx, step_text in enumerate(agent_steps, start=1):
             if st.session_state.get("stop_process"):
                 break
-            
-            # log_html += f"<div class='agent-log-line info'>{step_text}</div>"
+
             ts = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_html += f"<div class='agent-log-line info'><span class='source-tag'>{ts}</span> {step_text}</div>"
+            log_html += (
+                f"<div class='agent-log-line info'>"
+                f"<span class='source-tag'>{ts}</span> {step_text}"
+                f"</div>"
+            )
 
             box_html = f"<div class='agent-log-box'>{log_html}</div>"
-            
+
             if log_ph is not None:
                 log_ph.markdown(box_html, unsafe_allow_html=True)
-            
+
             st.session_state.log_html[f"log_{key}"] = box_html
-            
-            # Update progress bar
+
+            # progress update stays same...
             pct = int((s_idx / max(total_lines, 1)) * 100)
             if progress_ph is not None:
                 progress_ph.markdown(
@@ -2870,8 +2890,10 @@ if run_clicked:
                     f"</div>",
                     unsafe_allow_html=True,
                 )
-            
+
             time.sleep(SIMULATE_TIME_PER_STEP)
+
+
         
         if st.session_state.get("stop_process"):
             if progress_ph is not None:

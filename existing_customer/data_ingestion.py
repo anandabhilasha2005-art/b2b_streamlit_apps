@@ -4,21 +4,19 @@ import time
 from typing import Dict, List
 import html
 import datetime
-import re, os
-from pathlib import Path
+import re
+import os
 
 
 selected_company = "IronBuild Infrastructure"
 
-BASE_DIR = Path(__file__).resolve().parent
-FILES_DIR = BASE_DIR / "files"
-
-
 class DataEngineerApp:
     def __init__(self):
         self.simulate_time_per_step = 0.7
-        self.excel_path = FILES_DIR / "b2b_agentic_streamlit_demo_data.xlsx"
-
+        self.BASE_DIR = os.getcwd()
+        self.excel_path = os.path.join(
+            self.BASE_DIR, "files\\b2b_agentic_streamlit_demo_data.xlsx"
+        )
 
     # =========================
     # UI helpers
@@ -635,38 +633,32 @@ class DataEngineerApp:
 
         # ---- Commercial Summary ----
         html_parts.append(
-            '<div style="margin-top:12px;">'
-                '<ul style="'
-                    'list-style-type: disc;'
-                    'font-size:14px;'
-                    'line-height:1.5;'
-                    'margin-bottom:12px;'
-                '">'
-                    '<li>'
-                        '<b>Total TCV:</b> '
-                        f'{row.get("Total_TCV", "(no value)")}'
-                    '</li>'
-                    '<li>'
-                        '<b>TCV Growth (3 Years):</b> '
-                        f'{self.display_value(row.get("TCV_Growth_3Yr_Pct"), "TCV_Growth_3Yr_Pct")}'
-                    '</li>'
-                    '<li>'
-                        '<b>Opportunities (3 Years):</b> '
-                        f'Won: {self.display_value(row.get("Won_Opps_Last_3Yr"))}, '
-                        f'Lost: {self.display_value(row.get("Lost_Opps_Last_3Yr"))}, '
-                        f'Open: {self.display_value(row.get("Open_Opps_Current"))}'
-                    '</li>'
-                    '<li>'
-                        '<b>Share of Wallet:</b> '
-                        f'{self.display_value(row.get("share_of_wallet_pct"), "share_of_wallet_pct")}'
-                    '</li>'
-                    '<li>'
-                        '<b>Contract Value to Revenue:</b> '
-                        f'{row.get("contract_value_to_rev_pct")}%'
-                    '</li>'
-                '</ul>'
-            '</div>'
+            "<details open style='margin-top:8px;'>"
+            "<summary style='cursor:pointer; font-weight:600; color:#6b00b8;'>Commercial Summary</summary>"
+            "<div style='margin-top:8px;'>"
+                "<ul style='list-style-type: disc; font-size:14px; line-height:1.5; margin:0; padding-left:18px;'>"
+                    "<li><b>Total TCV:</b> "
+                        f"{self.display_value(row.get('Total_TCV'))}"
+                    "</li>"
+                    "<li><b>TCV Growth (3 Years):</b> "
+                        f"{self.display_value(row.get('TCV_Growth_3Yr_Pct'), 'TCV_Growth_3Yr_Pct')}"
+                    "</li>"
+                    "<li><b>Opportunities (3 Years):</b> "
+                        f"Won: {self.display_value(row.get('Won_Opps_Last_3Yr'))}, "
+                        f"Lost: {self.display_value(row.get('Lost_Opps_Last_3Yr'))}, "
+                        f"Open: {self.display_value(row.get('Open_Opps_Current'))}"
+                    "</li>"
+                    "<li><b>Share of Wallet:</b> "
+                        f"{self.display_value(row.get('share_of_wallet_pct'), 'share_of_wallet_pct')}"
+                    "</li>"
+                    "<li><b>Contract Value to Revenue:</b> "
+                        f"{self.display_value(row.get('contract_value_to_rev_pct'))}%"
+                    "</li>"
+                "</ul>"
+            "</div>"
+            "</details>"
         )
+
 
         html_parts.append(
             f"<details style='margin-top:8px;'><summary style='cursor:pointer; font-weight:600; color:#6b00b8;'>Current Product Portfolio</summary><div style='margin-top:6px;'>"
@@ -755,37 +747,56 @@ class DataEngineerApp:
 
 
     def format_techno_and_spend_block(self, row):
-        html_parts = ["<ul>"]
-        if row.get('Tech Install'):
+        html_parts = ["<div>"]
+
+        # --- Stack Breakdown (optional) ---
+        if row.get("Tech Install"):
             html_parts.append(
-                f"<details style='margin-top:8px;'><summary style='cursor:pointer; font-weight:600; color:#6b00b8;'>Detailed Stack Breakdown</summary><div style='margin-top:6px;'>{self.format_tech_install(row.get('Tech Install'))}</div></details>"
+                "<details style='margin-top:8px;'>"
+                "<summary style='cursor:pointer; font-weight:600; color:#6b00b8;'>"
+                "Detailed Stack Breakdown"
+                "</summary>"
+                f"<div style='margin-top:6px;'>{self.format_tech_install(row.get('Tech Install'))}</div>"
+                "</details>"
             )
+
+        # --- Spend (vertical bullets, serial order) ---
         html_parts.append(
-            f"<details style='margin-top:8px;'><summary style='cursor:pointer; font-weight:600; color:#6b00b8;'>Est Potential Spend</summary><div style='margin-top:6px;'>"
+            "<details style='margin-top:8px;'>"
+            "<summary style='cursor:pointer; font-weight:600; color:#6b00b8;'>"
+            "Est Potential Spend"
+            "</summary>"
+            "<div style='margin-top:6px;'>"
+        )
+
+        # Normal (non-grid) bullet list
+        html_parts.append(
+            "<ul style='list-style-type: disc; padding-left: 18px; margin: 8px 0 0 0; line-height: 1.6;'>"
+        )
+
+        # Required order: ICT, Telco, SW, HW, IT Services
+        html_parts.append(
+            f"<li><b>ICT Spend:</b> {self.display_value(row.get('Company_Annual_ICT_Spending_Bucket'))}</li>"
         )
         html_parts.append(
-            '<ul style=\'display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; list-style-position: inside; padding-left:0;\'>'
+            f"<li><b>Telco Spend:</b> {self.display_value(row.get('Company_Annual_Telco_Spending_Bucket'))}</li>"
         )
         html_parts.append(
-            f'<li><b>ICT Spend:</b> {self.display_value(row.get("Company_Annual_ICT_Spending_Bucket"))}</li>'
+            f"<li><b>SW Spend:</b> {self.display_value(row.get('Company_Annual_SW_Spending_Bucket'))}</li>"
         )
         html_parts.append(
-            f'<li><b>SW Spend:</b> {self.display_value(row.get("Company_Annual_SW_Spending_Bucket"))}</li>'
+            f"<li><b>HW Spend:</b> {self.display_value(row.get('Company_Annual_HW_Spending_Bucket'))}</li>"
         )
         html_parts.append(
-            f'<li><b>HW Spend:</b> {self.display_value(row.get("Company_Annual_HW_Spending_Bucket"))}</li>'
+            f"<li><b>IT Services Spend:</b> {self.display_value(row.get('Company_Annual_IT_Services_Spending_Bucket'))}</li>"
         )
-        html_parts.append(
-            f'<li><b>Telco Spend:</b> {self.display_value(row.get("Company_Annual_Telco_Spending_Bucket"))}</li>'
-        )
-        html_parts.append(
-            f'<li><b>IT Services Spend:</b> {self.display_value(row.get("Company_Annual_IT_Services_Spending_Bucket"))}</li>'
-        )
-        html_parts.append('</ul>')
-        html_parts.append("</div></details>")
+
         html_parts.append("</ul>")
+        html_parts.append("</div></details>")
+        html_parts.append("</div>")
 
         return "".join(html_parts)
+
 
     def format_intent_block(self, row):
         html_parts = ["<ul>"]
@@ -1527,10 +1538,12 @@ class DataEngineerApp:
         }
 
         .product-cards {
-            display: flex;
+            display: grid;
             flex-wrap: wrap;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 12px;
             margin-top: 8px;
+            align-items: start; /* important */
         }
 
         .product-card {
@@ -1540,8 +1553,11 @@ class DataEngineerApp:
             padding: 12px 14px;
             min-width: 240px;
             max-width: 280px;
+            min-height: 0 !important; 
             box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+            height: fit-content;   /* avoids tall empty cards */
         }
+
 
         .product-card-title {
             font-weight: 700;
@@ -1550,9 +1566,11 @@ class DataEngineerApp:
         }
 
         .product-card-meta {
+            margin: 0 !important;
+            padding: 0 !important;
             font-size: 13px;
             color: #333;
-            line-height: 1.4;
+            line-height: 1.4 !important;;
         }
 
 
