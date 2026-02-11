@@ -617,12 +617,12 @@ class DataEngineerApp:
     def format_product_usage_block(self, row: dict) -> str:
         """
         Build a Product Usage, Contracts and Opportunities HTML block based on active products.
-        - Reads Active_Telstra_Products to detect which product families are present
+        - Reads Active_Products to detect which product families are present
         - Renders only the relevant sections
         - Returns ONE well-formed HTML string
         """
 
-        active_raw = row.get("Active_Telstra_Products", "")
+        active_raw = row.get("Active_Products", "")
 
         # Normalize active products list
         active_products = [
@@ -889,7 +889,7 @@ class DataEngineerApp:
             {
                 "name": "Product Usage, Contracts and Opportunities",
                 "cols": [
-                    "Active_Telstra_Products",
+                    "Active_Products",
                     "Internet_Contract_Start_Date",
                     "Internet_Contract_End_Date",
                     "Internet_Bandwidth_GBbps",
