@@ -1408,7 +1408,7 @@ def data_engineer_page():
 
     from pathlib import Path
     BASE_DIR = Path(__file__).resolve().parent
-    excel_path = BASE_DIR / "files" / "b2b_agentic_streamlit_demo_data.xlsx"
+    excel_path = BASE_DIR / "Files" / "b2b_agentic_streamlit_demo_data.xlsx"
 
 
     try:
